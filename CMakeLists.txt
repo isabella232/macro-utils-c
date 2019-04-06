@@ -25,7 +25,7 @@ install(FILES "inc/azure_macro_utils/macro_utils.h" DESTINATION "${CMAKE_INSTALL
 if("${CMAKE_VERSION}" VERSION_GREATER 3.0.0)
     add_library(azure_macro_utils_c INTERFACE)
     install(TARGETS azure_macro_utils_c EXPORT azure_macro_utils_cTargets
-        INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+        INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/azureiot
     )
 
     #Install azure_iot_sdks

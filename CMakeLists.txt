@@ -17,10 +17,12 @@ option(run_int_tests "set run_int_tests to ON to run int tests (default is OFF)"
 #the following "set" statement exports across the project a global variable called MACRO_UTILS_INC_FOLDER that expands to whatever needs to included when using macro_utils
 set(MACRO_UTILS_INC_FOLDER ${CMAKE_CURRENT_LIST_DIR}/inc CACHE INTERNAL "this is what needs to be included if using macro utils" FORCE)
 
+set(source_h_files "inc/azure_macro_utils/macro_utils.h")
+
 include(CTest)
 include(GNUInstallDirs)
 
-install(FILES "inc/azure_macro_utils/macro_utils.h" DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/azure_macro_utils")
+install(FILES ${source_h_files} DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/azure_macro_utils")
 
 if("${CMAKE_VERSION}" VERSION_GREATER 3.0.0)
     add_library(azure_macro_utils_c INTERFACE)

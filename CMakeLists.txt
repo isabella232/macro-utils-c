@@ -24,40 +24,45 @@ install(FILES "inc/azure_macro_utils/macro_utils.h" DESTINATION "${CMAKE_INSTALL
 
 if("${CMAKE_VERSION}" VERSION_GREATER 3.0.0)
     add_library(azure_macro_utils_c INTERFACE)
-    install(TARGETS azure_macro_utils_c EXPORT azure_macro_utils_cTargets
-        INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+    target_include_directories(azure_macro_utils_c INTERFACE
+        ${PROJECT_SOURCE_DIR}/inc
+        # $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/inc>
+        # $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/azure_macro_utils>
     )
+    # install(TARGETS azure_macro_utils_c EXPORT azure_macro_utils_cTargets
+    #     INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+    # )
 
-    #Install azure_iot_sdks
-    set(package_location "cmake")
+    # #Install azure_iot_sdks
+    # set(package_location "cmake")
 
-    include(CMakePackageConfigHelpers)
+    # include(CMakePackageConfigHelpers)
 
-    write_basic_package_version_file(
-        "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}/${PROJECT_NAME}ConfigVersion.cmake"
-        VERSION ${AZURE_MACRO_UTILS_C_VERSION}
-        COMPATIBILITY SameMajorVersion
-    )
+    # write_basic_package_version_file(
+    #     "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}/${PROJECT_NAME}ConfigVersion.cmake"
+    #     VERSION ${AZURE_MACRO_UTILS_C_VERSION}
+    #     COMPATIBILITY SameMajorVersion
+    # )
 
-    configure_file("configs/${PROJECT_NAME}Config.cmake"
-        "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}/${PROJECT_NAME}Config.cmake"
-        COPYONLY
-    )
+    # configure_file("configs/${PROJECT_NAME}Config.cmake"
+    #     "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}/${PROJECT_NAME}Config.cmake"
+    #     COPYONLY
+    # )
 
-    install(EXPORT azure_macro_utils_cTargets
-        FILE
-            "${PROJECT_NAME}Targets.cmake"
-        DESTINATION
-            ${package_location}
-    )
+    # install(EXPORT azure_macro_utils_cTargets
+    #     FILE
+    #         "${PROJECT_NAME}Targets.cmake"
+    #     DESTINATION
+    #         ${package_location}
+    # )
 
-    install(
-        FILES
-            "configs/${PROJECT_NAME}Config.cmake"
-            "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}/${PROJECT_NAME}ConfigVersion.cmake"
-        DESTINATION
-            ${package_location}
-    )
+    # install(
+    #     FILES
+    #         "configs/${PROJECT_NAME}Config.cmake"
+    #         "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}/${PROJECT_NAME}ConfigVersion.cmake"
+    #     DESTINATION
+    #         ${package_location}
+    # )
 else()
     message(STATUS "This version of CMake does not support interface targets. Only the Azure Macro Utils header file will be installed. To use Azure Macro Utils, simply add \"MACRO_UTILS_INC_FOLDER\" to your include directories as specified in the instructions on the GitHub README.")
 endif()

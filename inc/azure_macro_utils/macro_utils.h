@@ -105,13 +105,13 @@ MU_IF(X, "true", "false") => "true"
 //     static int my_test_uber_b = 42;
 //     static int enum_last_value = -1;
 //     int id_has_equals;
-//     id_has_equals = (my_test_uber_a - 1) == (my_test_uber_a) ? 1 : 0;
+//     id_has_equals = (my_test_uber_a - 1) == (my_test_uber_a);
 //     enum_last_value = (id_has_equals == 1) ? (my_test_uber_a) : (enum_last_value + 1);
 //     if (enum_last_value == value)
 //     {
 //         return "test_uber_a";
 //     }
-//     id_has_equals = (my_test_uber_b = 42 - 1) - (my_test_uber_b = 42) ? 1 : 0;
+//     id_has_equals = (my_test_uber_b = 42 - 1) == (my_test_uber_b = 42);
 //     enum_last_value = (id_has_equals == 1) ? (my_test_uber_b = 42) : (enum_last_value + 1);
 //     if (enum_last_value == value)
 //     {
@@ -126,7 +126,7 @@ MU_IF(X, "true", "false") => "true"
     static int MU_C2(my_, enumValue);
 
 #define MU_INTERNAL_ASSIGN_ENUM_VALUE(enumValue) \
-    id_has_equals = (MU_C2(my_, enumValue) - 1) == (MU_C2(my_, enumValue)) ? 1 : 0; \
+    id_has_equals = (MU_C2(my_, enumValue) - 1) == (MU_C2(my_, enumValue)); \
     enum_last_value = id_has_equals ? (MU_C2(my_, enumValue)) : (enum_last_value + 1); \
     if (enum_last_value == value) \
     { \

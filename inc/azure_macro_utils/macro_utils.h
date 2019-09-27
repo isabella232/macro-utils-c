@@ -87,7 +87,7 @@ MU_IF(X, "true", "false") => "true"
 //
 //
 
-// This uber enum macro can handle enumeration-constants being constant expressions.
+// This macro can handle enumeration-constants being constant expressions.
 // Given the following enum:
 //
 //
@@ -133,12 +133,12 @@ MU_IF(X, "true", "false") => "true"
         return MU_TOSTRING(enumValue); \
     }
 
-#define MU_DECLARE_ENUM_STRINGS(enumName, ...) \
+#define MU_DECLARE_ENUM_TO_STRING(enumName, ...) \
     const char* MU_C3(MU_, enumName, _ToString)(enumName value);
 
 #define MU_DEFINE_ENUM_WITHOUT_INVALID(enumName, ...) \
     typedef enum MU_C2(enumName, _TAG) { MU_FOR_EACH_1(MU_DEFINE_ENUMERATION_CONSTANT, __VA_ARGS__)} enumName; \
-    MU_DECLARE_ENUM_STRINGS(enumName, __VA_ARGS__)
+    MU_DECLARE_ENUM_TO_STRING(enumName, __VA_ARGS__)
 
 #define MU_DEFINE_ENUM(enumName, ...) \
     MU_DEFINE_ENUM_WITHOUT_INVALID(enumName, MU_C2(enumName, _INVALID), __VA_ARGS__) \

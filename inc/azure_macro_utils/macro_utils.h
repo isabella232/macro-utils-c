@@ -101,18 +101,18 @@ MU_IF(X, "true", "false") => "true"
 //
 // const char* TEST_UBER_ENUM_ToString(TEST_UBER_ENUM value)
 // {
-//     static int my_test_uber_a;
-//     static int my_test_uber_b = 42;
+//     static TEST_UBER_ENUM my_test_uber_a;
+//     static TEST_UBER_ENUM my_test_uber_b = 42;
 //     static int enum_last_value = -1;
 //     int id_has_equals;
 //     id_has_equals = (my_test_uber_a - 1) == (my_test_uber_a);
-//     enum_last_value = (id_has_equals == 1) ? (my_test_uber_a) : (enum_last_value + 1);
+//     enum_last_value = id_has_equals ? (my_test_uber_a) : (enum_last_value + 1);
 //     if (enum_last_value == value)
 //     {
 //         return "test_uber_a";
 //     }
 //     id_has_equals = (my_test_uber_b = 42 - 1) == (my_test_uber_b = 42);
-//     enum_last_value = (id_has_equals == 1) ? (my_test_uber_b = 42) : (enum_last_value + 1);
+//     enum_last_value = id_has_equals ? (my_test_uber_b = 42) : (enum_last_value + 1);
 //     if (enum_last_value == value)
 //     {
 //         return "test_uber_b = 42";
@@ -122,8 +122,8 @@ MU_IF(X, "true", "false") => "true"
 
 #define MU_DEFINE_ENUMERATION_CONSTANT(x) x,
 
-#define MU_INTERNAL_DECLARE_ENUM_VAR(enumValue) \
-    static int MU_C2(my_, enumValue);
+#define MU_INTERNAL_DEFINE_ENUM_VAR(enumName, enumValue) \
+    static enumName MU_C2(my_, enumValue);
 
 #define MU_INTERNAL_ASSIGN_ENUM_VALUE(enumValue) \
     id_has_equals = (MU_C2(my_, enumValue) - 1) == (MU_C2(my_, enumValue)); \
@@ -146,7 +146,7 @@ MU_IF(X, "true", "false") => "true"
 #define MU_DEFINE_ENUM_STRINGS_WITHOUT_INVALID(enumName, ...) \
     const char* MU_C3(MU_, enumName, _ToString)(enumName value) \
     { \
-        MU_FOR_EACH_1(MU_INTERNAL_DECLARE_ENUM_VAR, __VA_ARGS__) \
+        MU_FOR_EACH_1_KEEP_1(MU_INTERNAL_DEFINE_ENUM_VAR, enumName, __VA_ARGS__) \
         int enum_last_value = -1; \
         int id_has_equals; \
         MU_FOR_EACH_1(MU_INTERNAL_ASSIGN_ENUM_VALUE, __VA_ARGS__) \
@@ -173,7 +173,7 @@ MU_IF(X, "true", "false") => "true"
     typedef enum MU_C2(enumName, _TAG) { MU_FOR_EACH_1(MU_DEFINE_ENUMERATION_CONSTANT, __VA_ARGS__)} enumName; \
     static const char* MU_C3(MU_, enumName, _ToString)(enumName value) \
     { \
-        MU_FOR_EACH_1(MU_INTERNAL_DECLARE_ENUM_VAR, __VA_ARGS__) \
+        MU_FOR_EACH_1_KEEP_1(MU_INTERNAL_DEFINE_ENUM_VAR, enumName, __VA_ARGS__) \
         int enum_last_value = -1; \
         int id_has_equals; \
         MU_FOR_EACH_1(MU_INTERNAL_ASSIGN_ENUM_VALUE, __VA_ARGS__) \
@@ -185,7 +185,10 @@ MU_IF(X, "true", "false") => "true"
     MU_DEFINE_LOCAL_ENUM_WITHOUT_INVALID(enumName, MU_C2(enumName, _INVALID), __VA_ARGS__)
 
 // this macro returns the number of enum values (taking into account that an invalid value is generated)
-#define MU_ENUM_VALUE_COUNT(...) (MU_COUNT_ARG(__VA_ARGS__) + 1)
+#define MU_ENUM_VALUE_COUNT(...) (MU_INC(MU_COUNT_ARG(__VA_ARGS__)))
+
+// this macro returns the number of enum values (taking into account that no invalid value is generated)
+#define MU_ENUM_VALUE_COUNT_WITHOUT_INVALID(...) MU_COUNT_ARG(__VA_ARGS__)
 
 //
 //

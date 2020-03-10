@@ -88,8 +88,8 @@ MU_IF(X, "true", "false") => "true"
 #define MU_DEFINE_ENUM(enumName, ...) \
     MU_DEFINE_ENUM_WITHOUT_INVALID(enumName, MU_C2(enumName, _INVALID), __VA_ARGS__)
 
-#define MU_DEFINE_ENUMERATION_CONSTANT_AS_WIDESTRING(x) MU_C2(L, MU_TOSTRING(x)) , 
-#define MU_DEFINE_ENUMERATION_CONSTANT_AS_STRING(x) MU_TOSTRING(x) , 
+#define MU_DEFINE_ENUMERATION_CONSTANT_AS_WIDESTRING(x) MU_C2(L, MU_TOSTRING(x)) ,
+#define MU_DEFINE_ENUMERATION_CONSTANT_AS_STRING(x) MU_TOSTRING(x) ,
 /*MU_DEFINE_ENUM_STRINGS_WITHOUT_INVALID goes to .c*/
 #define MU_DEFINE_ENUM_STRINGS_WITHOUT_INVALID(enumName, ...) const char* MU_C2(enumName, StringStorage)[MU_COUNT_ARG(__VA_ARGS__)] = {MU_FOR_EACH_1(MU_DEFINE_ENUMERATION_CONSTANT_AS_STRING, __VA_ARGS__)}; \
 const char* MU_C2(enumName,Strings)(enumName value)                \
@@ -201,6 +201,72 @@ const char* MU_C3(MU_, enumIdentifier,_ToString)(enumIdentifier value)          
 #define MU_ENUM_VALUE(enumIdentifier, value) "", MU_ENUM_TO_STRING(enumIdentifier, (value)), (int)(value)
 
 #define MU_ENUM_VALUE_2(enumIdentifier, value) "", MU_ENUM_TO_STRING_2(enumIdentifier, (value)), (int)(value)
+
+/*
+MU_DEFINE_ENUM_TRANSLATION is used to define the translation from one related enum to another. Example:
+
+#define FOO_ENUM_VALUES \
+    FOO_OK, \
+    FOO_UNKNOWN, \
+    FOO_ERROR, \
+    FOO_BUSY
+
+MU_DEFINE_ENUM(FOO, FOO_ENUM_VALUES)
+
+#define BAR_ENUM_VALUES \
+    BAR_ERROR, \
+    BAR_OK, \
+    BAR_BAZ,
+    BAR_BUSY
+
+MU_DEFINE_ENUM(BAR, BAR_ENUM_VALUES)
+
+MU_DEFINE_ENUM_TRANSLATION(FOO, BAR, BAR_ERROR,
+    TRANSLATE(FOO_OK, BAR_OK),
+    TRANSLATE(FOO_UNKNOWN, BAR_ERROR),
+    TRANSLATE(FOO_ERROR, BAR_ERROR),
+    TRANSLATE(FOO_BUSY, BAR_BUSY)
+    )
+
+MU_DEFINE_ENUM_TRANSLATION(BAR, FOO, FOO_UNKNOWN,
+    TRANSLATE(BAR_ERROR, FOO_ERROR),
+    TRANSLATE(BAR_OK, FOO_OK),
+    TRANSLATE(BAR_BAZ, FOO_UNKNOWN),
+    TRANSLATE(BAR_BUSY, FOO_BUSY)
+    )
+
+FOO translated1 = MU_TRANSLATE_ENUM(BAR, FOO, BAR_OK);
+// translated1 == FOO_OK
+
+BAR translated2 = MU_TRANSLATE_ENUM(FOO, BAR, FOO_UNKNOWN);
+// translated2 == BAR_ERROR
+*/
+
+#define MU_ENUM_TRANSLATE(from, to) \
+case from: \
+    result = to; \
+    break;
+
+#define MU_ENUM_TRANSLATION_CASE(x) MU_C2(MU_ENUM_, x)
+
+#define MU_DECLARE_ENUM_TRANSLATION(fromType, toType, defaultResult, ...) \
+toType MU_C4(MU_TRANSLATE_, fromType, _TO_, toType)(fromType value);
+
+#define MU_DEFINE_ENUM_TRANSLATION(fromType, toType, defaultResult, ...) \
+toType MU_C4(MU_TRANSLATE_, fromType, _TO_, toType)(fromType value) \
+{ \
+    toType result; \
+    switch (value) \
+    { \
+        default: \
+            result = defaultResult; \
+            break; \
+        MU_FOR_EACH_1(MU_ENUM_TRANSLATION_CASE, __VA_ARGS__) \
+    } \
+    return result; \
+}
+
+#define MU_TRANSLATE_ENUM(fromType, toType, value) MU_C4(MU_TRANSLATE_, fromType, _TO_, toType)(value)
 
 #define MU_DEFINE_STRUCT_FIELD(fieldType, fieldName) fieldType fieldName;
 

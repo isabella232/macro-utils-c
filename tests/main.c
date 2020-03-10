@@ -20,7 +20,7 @@ int main(void)
     int result;
     result = run_mu_define_enum_2_without_invalid_test();
     POOR_MANS_ASSERT(result == 0);
-    
+
     result = run_mu_eat_empty_args_test();
     POOR_MANS_ASSERT(result == 0);
 
@@ -34,6 +34,9 @@ int main(void)
     POOR_MANS_ASSERT(result == 0);
 
     result = run_mu_define_enum_tests();
+    POOR_MANS_ASSERT(result == 0);
+
+    result = run_mu_define_enum_translation_tests();
     POOR_MANS_ASSERT(result == 0);
 
     result = run_mu_define_local_enum_tests();

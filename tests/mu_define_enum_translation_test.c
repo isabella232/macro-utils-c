@@ -1,0 +1,60 @@
+// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+#include <string.h>
+#include "test_helper.h"
+
+#include "azure_macro_utils/macro_utils.h"
+
+#include "mu_define_enum_translation_test.h"
+
+#define FOO_ENUM_VALUES \
+    FOO_OK, \
+    FOO_UNKNOWN, \
+    FOO_ERROR, \
+    FOO_BUSY
+
+MU_DEFINE_ENUM(FOO, FOO_ENUM_VALUES)
+
+#define BAR_ENUM_VALUES \
+    BAR_ERROR, \
+    BAR_OK, \
+    BAR_BAZ, \
+    BAR_BUSY, \
+    BAR_NEW_VALUE_ADDED
+
+MU_DEFINE_ENUM(BAR, BAR_ENUM_VALUES)
+
+MU_DEFINE_ENUM_TRANSLATION(FOO, BAR, BAR_ERROR,
+    TRANSLATE(FOO_OK, BAR_OK),
+    TRANSLATE(FOO_UNKNOWN, BAR_ERROR),
+    TRANSLATE(FOO_ERROR, BAR_ERROR),
+    TRANSLATE(FOO_BUSY, BAR_BUSY)
+)
+
+MU_DEFINE_ENUM_TRANSLATION(BAR, FOO, FOO_UNKNOWN,
+    TRANSLATE(BAR_ERROR, FOO_ERROR),
+    TRANSLATE(BAR_OK, FOO_OK),
+    TRANSLATE(BAR_BAZ, FOO_UNKNOWN),
+    TRANSLATE(BAR_BUSY, FOO_BUSY)
+)
+
+int run_mu_define_enum_translation_tests(void)
+{
+    int result = 0;
+
+    // Can translate from BAR to FOO
+    POOR_MANS_ASSERT(MU_TRANSLATE_ENUM(BAR, FOO, BAR_ERROR) == FOO_ERROR);
+    POOR_MANS_ASSERT(MU_TRANSLATE_ENUM(BAR, FOO, BAR_OK) == FOO_OK);
+    POOR_MANS_ASSERT(MU_TRANSLATE_ENUM(BAR, FOO, BAR_BAZ) == FOO_UNKNOWN);
+    POOR_MANS_ASSERT(MU_TRANSLATE_ENUM(BAR, FOO, BAR_BUSY) == FOO_BUSY);
+    POOR_MANS_ASSERT(MU_TRANSLATE_ENUM(BAR, FOO, BAR_NEW_VALUE_ADDED) == FOO_UNKNOWN);
+
+    // Can translate from FOO to BAR
+    POOR_MANS_ASSERT(MU_TRANSLATE_ENUM(FOO, BAR, FOO_OK) == BAR_OK);
+    POOR_MANS_ASSERT(MU_TRANSLATE_ENUM(FOO, BAR, FOO_UNKNOWN) == BAR_ERROR);
+    POOR_MANS_ASSERT(MU_TRANSLATE_ENUM(FOO, BAR, FOO_ERROR) == BAR_ERROR);
+    POOR_MANS_ASSERT(MU_TRANSLATE_ENUM(FOO, BAR, FOO_BUSY) == BAR_BUSY);
+
+    return result;
+}

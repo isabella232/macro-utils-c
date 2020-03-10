@@ -216,7 +216,7 @@ MU_DEFINE_ENUM(FOO, FOO_ENUM_VALUES)
 #define BAR_ENUM_VALUES \
     BAR_ERROR, \
     BAR_OK, \
-    BAR_BAZ,
+    BAR_BAZ, \
     BAR_BUSY
 
 MU_DEFINE_ENUM(BAR, BAR_ENUM_VALUES)
@@ -249,7 +249,7 @@ case from: \
 
 #define MU_ENUM_TRANSLATION_CASE(x) MU_C2(MU_ENUM_, x)
 
-#define MU_DECLARE_ENUM_TRANSLATION(fromType, toType, defaultResult, ...) \
+#define MU_DECLARE_ENUM_TRANSLATION(fromType, toType) \
 toType MU_C4(MU_TRANSLATE_, fromType, _TO_, toType)(fromType value);
 
 #define MU_DEFINE_ENUM_TRANSLATION(fromType, toType, defaultResult, ...) \

@@ -69,6 +69,14 @@ MU_IF(X, "true", "false") => "true"
 #define MU_IF0(trueBranch, falseBranch) falseBranch
 #define MU_IF1(trueBranch, falseBranch) trueBranch
 
+#ifdef _MSC_VER
+#define MU_WARNING_SUPPRESS(warn_no) \
+    __pragma(warning(suppress:warn_no))
+
+#else
+#define MU_WARNING_SUPPRESS(warn_no)
+#endif
+
 
 /*the following macro want to eat empty arguments from a list */
 /*examples:                                                   */
@@ -79,7 +87,8 @@ MU_IF(X, "true", "false") => "true"
 #define MU_EAT_EMPTY_ARGS(...) MU_FOR_EACH_1_COUNTED(MU_EAT_EMPTY_ARG, __VA_ARGS__)
 
 #define MU_TYPEDEF_EACH_ENUM_VALUE(enum_value) \
-    typedef int MU_C2(enum_value_typedef_, enum_value);
+    MU_WARNING_SUPPRESS(4132) \
+    static const int MU_C2(enum_value_typedef_, enum_value);
 
 #define MU_DEFINE_ENUMERATION_CONSTANT(x) x,
 /*MU_DEFINE_ENUM_WITHOUT_INVALID goes to header*/
